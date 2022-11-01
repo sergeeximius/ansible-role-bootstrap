@@ -41,6 +41,12 @@
   block:
     - name: gather ansible facts
       ansible.builtin.setup:
+    
+    - name: update package cache and upgrade OS with dist (apt/Debian)
+      ansible.builtin.apt:
+        upgrade: dist
+        update_cache: yes
+      when: bootstrap_os_family == "Debian"
 
     - name: install bootstrap packages (package)
       ansible.builtin.package:
