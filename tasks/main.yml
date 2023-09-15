@@ -36,7 +36,6 @@
           (bootstrap_install.stdout_regex not in bootstrap_install_packages.stdout and
            bootstrap_os_family in [ "Debian", "RedHat", "Rocky", "Suse" ])
 
-
 - name: ensure system is prepared
   block:
     - name: gather ansible facts
@@ -53,3 +52,33 @@
         name: "{{ item }}"
         state: present
       loop: "{{ bootstrap_facts_packages.split() }}"
+
+- name: Set timezone to Europe/Moscow
+      community.general.timezone:
+        name: Europe/Moscow
+
+- name: Uncomment the locale in /etc/locale.gen
+  ansible.builtin.lineinfile:
+    path: /etc/locale.gen
+    regexp: "^# {{ item }}$"
+    line: "{{ item }}"
+    state: present
+  with_items:
+    - "en_US.UTF-8 UTF-8"
+    - "ru_RU.UTF-8 UTF-8"
+
+- name: Ensure a locale exists
+  community.general.locale_gen:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "en_US.UTF-8"
+    - "ru_RU.UTF-8"
+
+- name: Update LC_TIME
+  ansible.builtin.command:
+    cmd: update-locale LANG=en_US.UTF-8 LC_TIME="ru_RU.UTF-8"
+
+- name: Set hostname
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname + '.local' }}"
