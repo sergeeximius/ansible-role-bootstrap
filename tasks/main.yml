@@ -54,8 +54,8 @@
       loop: "{{ bootstrap_facts_packages.split() }}"
 
 - name: Set timezone to Europe/Moscow
-      community.general.timezone:
-        name: Europe/Moscow
+  community.general.timezone:
+    name: Europe/Moscow
 
 - name: Uncomment the locale in /etc/locale.gen
   ansible.builtin.lineinfile:
